@@ -34,13 +34,15 @@ flowchart LR
     class OUT output
 ```
 
-<hr>
-#### BEVFusion
+---
+### BEVFusion on CARLA
 <img width="1450" height="474" alt="image" src="https://github.com/user-attachments/assets/4c19970d-ae73-4f4d-bb01-eac57e2dcef9" />
-> camera+lidar bev fusion object detection perception
 
-<hr>
-#### Carla
+> **camera+lidar bev fusion object detection perception**
+
+---
+### Carla
 <img width="960" height="618" alt="image" src="https://github.com/user-attachments/assets/b2050dd8-8abf-4984-8191-ef9aa5aeea80" />
-> carla object detection inference
+
+> **carla object detection inference**
 
