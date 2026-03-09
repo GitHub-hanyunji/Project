@@ -1,73 +1,46 @@
-# Project
+
+# BEVFusion on CARLA
+
+> **BEVFusion**을 nuScenes로 학습하고, CARLA 시뮬레이터에서 3D 객체 인지를 검증합니다.
 
 ```mermaid
 flowchart LR
-    subgraph CARLA["🌆 CARLA Simulator"]
+    subgraph TRAIN["🏋️ Training  —  nuScenes"]
         direction TB
-        LIDAR["📡 LiDAR Sensor\n64-beam, 360°\n~100k pts/frame"]
-        CAM["📷 Camera Array\n6× RGB, 1600×900\nsurround view"]
+        NS_L["📡 LiDAR"]
+        NS_C["📷 Camera"]
     end
 
-    subgraph PRE["⚙️ Preprocessing"]
+    BEV["🔀 BEVFusion <br/> BEV Fusion · 3D Det. Head"]
+
+    subgraph INFER["🚗 Inference  —  CARLA"]
         direction TB
-        VOX["🧊 Voxelization\n& Pillar Encoding\n0.2m voxel grid"]
-        IMGPRE["🖼️ Image Preprocess\nResize + Normalize\n256×704 per cam"]
+        CA_L["📡 LiDAR"]
+        CA_C["📷 Camera"]
     end
 
-    subgraph BACK["🔩 Backbone"]
-        direction TB
-        PTBACK["⚙️ PtCloud Backbone\nVoxelNet / PointPillars\nsparse 3D conv"]
-        IMGBACK["⚙️ Image Backbone\nSwin-T / ResNet-50\nFPN neck"]
-    end
+    OUT["📦 3D Objects <br/> bbox · class · velocity"]
 
-    subgraph VT["🗺️ View Transform"]
-        direction TB
-        BEVL["🗺️ BEV Feature\nLiDAR branch\nH×W×C map"]
-        BEVC["🗺️ BEV Feature\nCamera - LSS\nLift-Splat-Shoot"]
-    end
+    NS_L & NS_C --> BEV
+    BEV -. "pretrained weights" .-> OUT
+    CA_L & CA_C --> OUT
 
-    subgraph FUS["🔀 BEV Fusion"]
-        FUSE["🔀 Concat + Conv\nunified BEV feature"]
-    end
+    classDef data   fill:#0a2233,stroke:#00d4ff,color:#00d4ffee,font-weight:bold
+    classDef model  fill:#0a2018,stroke:#34d399,color:#34d399ee,font-weight:bold
+    classDef output fill:#0a1f0a,stroke:#4ade80,color:#4ade80ee,font-weight:bold
 
-    subgraph HEAD["🎯 Detection Head"]
-        DH["🎯 CenterPoint Head\nheatmap-based\nanchor-free"]
-    end
-
-    subgraph OUT["📦 Output"]
-        direction TB
-        BBOX["📦 3D BBox\nx,y,z,l,w,h,θ"]
-        CLS["🏷️ Class Label\ncar / ped / bike\n+ confidence"]
-        VEL["💨 Velocity\nvx, vy - m/s\nfor tracking"]
-    end
-
-    LIDAR --> VOX
-    CAM --> IMGPRE
-    VOX --> PTBACK
-    IMGPRE --> IMGBACK
-    PTBACK --> BEVL
-    IMGBACK --> BEVC
-    BEVL --> FUSE
-    BEVC --> FUSE
-    FUSE --> DH
-    DH --> BBOX
-    DH --> CLS
-    DH --> VEL
-
-    classDef sensor   fill:#0a2233,stroke:#00d4ff,color:#00d4ff,font-weight:bold
-    classDef pre      fill:#1a0a33,stroke:#a78bfa,color:#a78bfa,font-weight:bold
-    classDef backbone fill:#2a0a1a,stroke:#f472b6,color:#f472b6,font-weight:bold
-    classDef viewt    fill:#2a1a00,stroke:#fbbf24,color:#fbbf24,font-weight:bold
-    classDef fusion   fill:#0a2018,stroke:#34d399,color:#34d399,font-weight:bold
-    classDef head     fill:#0a1a22,stroke:#22d3ee,color:#22d3ee,font-weight:bold
-    classDef output   fill:#0a1f0a,stroke:#4ade80,color:#4ade80,font-weight:bold
-
-    class LIDAR,CAM sensor
-    class VOX,IMGPRE pre
-    class PTBACK,IMGBACK backbone
-    class BEVL,BEVC viewt
-    class FUSE fusion
-    class DH head
-    class BBOX,CLS,VEL output
-  
+    class NS_L,NS_C,CA_L,CA_C data
+    class BEV model
+    class OUT output
 ```
+
+<hr>
+#### BEVFusion
+<img width="1450" height="474" alt="image" src="https://github.com/user-attachments/assets/4c19970d-ae73-4f4d-bb01-eac57e2dcef9" />
+> camera+lidar bev fusion object detection perception
+
+<hr>
+#### Carla
+<img width="960" height="618" alt="image" src="https://github.com/user-attachments/assets/b2050dd8-8abf-4984-8191-ef9aa5aeea80" />
+> carla object detection inference
+
