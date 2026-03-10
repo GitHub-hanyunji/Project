@@ -1,4 +1,3 @@
-[README (3).md](https://github.com/user-attachments/files/25857180/README.3.md)
 # BEVFusion on CARLA
 
 > **BEVFusion**을 nuScenes로 학습하고, CARLA 시뮬레이터에서 3D 객체 인지를 검증합니다.
